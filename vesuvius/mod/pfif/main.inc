@@ -199,20 +199,21 @@ function shn_pfif_status_code() {
    $export_err = $log_dir . 'export.err';
 
    // Check both output files to make sure they are getting updated.
-   $lastImportOut = filemtime($import_out);
-   $lastExportOut = filemtime($export_out);
+   $lastImportOut = (file_exists($import_out))?filemtime($import_out):false;
+   $lastExportOut = (file_exists($export_out))?filemtime($export_out):false;
    // we are interested in the number of seconds since the oldest timestamp.
    $deltaImportOut = date("U") - $lastImportOut;
    $deltaExportOut = date("U") - $lastExportOut;
    $deltaOut = ($deltaImportOut > $deltaExportOut)? $deltaImportOut:$deltaExportOut;
 
    // Check for non-zero-size error file.
-   $errors = filesize($export_err)!=0 || filesize($import_err)!=0;
+   $errors = (file_exists($export_err) && filesize($export_err)!=0) || 
+							(file_exists($import_err) && filesize($import_err)!=0);
 
    // Check both error files to make sure they aren't recently updated.
    // (If errors only occur intermittantly, we treat it as a warning.)
-   $lastImportErr = filemtime($import_err);
-   $lastExportErr = filemtime($export_err);
+   $lastImportErr = (file_exists($import_err))?filemtime($import_err):false;
+   $lastExportErr = (file_exists($export_err))?filemtime($export_err):false;
    // we are interested in the number of seconds since the most recent timestamp.
    $deltaImportErr = date("U") - $lastImportErr;
    $deltaExportErr = date("U") - $lastExportErr;
